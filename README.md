@@ -1,89 +1,94 @@
-# Buku Kas Harian — versi iPhone (PWA)
+# Buku Kas Harian — versi iPhone (PWA + Firestore)
 
 Aplikasi pencatatan kas harian (pemasukan & pengeluaran bersama) dalam satu
 file HTML mandiri (single-file React app, dibungkus sendiri / self-unpacking).
-Repo ini menambahkan lapisan PWA (Progressive Web App) di atas file tersebut
-supaya bisa **di-install ke Home Screen iPhone dan terasa seperti aplikasi
-native**, tanpa perlu Mac, Xcode, atau akun Apple Developer.
+Repo ini menambahkan dua lapisan di atas file aslinya:
+
+1. **PWA** — supaya bisa di-install ke Home Screen iPhone dan terasa seperti
+   aplikasi native, tanpa perlu Mac, Xcode, atau akun Apple Developer.
+2. **Firebase Firestore** — supaya data tersimpan di cloud dan bisa diakses
+   dari beberapa HP/perangkat berbeda, bukan hanya di satu perangkat.
 
 ## Isi repo
 
-- `index.html` — aplikasi utama (tidak diubah logikanya, hanya ditambahkan
-  meta tag iOS/PWA, link manifest, dan pendaftaran service worker).
+- `index.html` — aplikasi utama. Logika pencatatan transaksi tidak diubah,
+  hanya ditambahkan: meta tag iOS/PWA, link manifest, pendaftaran service
+  worker, SDK Firebase (compat), dan implementasi `window.storage` yang
+  dipakai kode aslinya untuk baca/tulis data (lihat bagian Firestore di bawah).
 - `manifest.json` — deskriptor PWA (nama, ikon, warna tema, mode standalone).
-- `service-worker.js` — cache sederhana agar halaman tetap bisa dibuka saat
-  sinyal lemah. Data transaksi tetap tersimpan di `localStorage` perangkat,
-  bukan di cache ini — artinya **data tidak sinkron otomatis antar perangkat**
-  kecuali aplikasi sumbernya memang mengimplementasikan sinkronisasi sendiri.
+- `service-worker.js` — cache sederhana agar halaman (bukan datanya) tetap
+  bisa dibuka saat sinyal lemah.
 - `icons/` — ikon aplikasi (180×180 untuk iOS, 192×192 & 512×512 untuk PWA).
 
-Catatan jujur: saya tidak memodifikasi logika aplikasi (form transaksi,
-kategori, impor screenshot mutasi, dsb.) — itu murni hasil ekspor dari
-pembuatnya. Saya hanya menambahkan lapisan agar bisa di-install sebagai app
-di iPhone.
+## Penyimpanan data: Firebase Firestore
+
+Project Firebase: **buku-kas-harian-6c5ce** (paket gratis/Spark, region
+Jakarta - asia-southeast2). Data tersimpan di koleksi Firestore
+`bukuKasHarian`, satu dokumen per jenis data (`categories-v1`, `expenses-v1`,
+`device-name-v1`).
+
+Catatan keamanan yang perlu Anda ketahui: security rules Firestore saat ini
+mengizinkan **siapa pun membaca dan menulis** ke koleksi tersebut
+(`allow read, write: if true`) — tanpa login. Ini sengaja dibuat sederhana
+agar cocok dengan sifat aplikasi yang memang "bersama" tanpa akun. Konsekuensi:
+siapa pun yang tahu `projectId` dan `apiKey` (yang memang tampil di kode
+`index.html` publik ini — itu wajar untuk Firebase, bukan kebocoran) bisa ikut
+menulis ke database yang sama. Untuk kas harian pribadi/keluarga/tim kecil
+umumnya ini bisa diterima, tapi kalau ingin dibatasi hanya untuk yang Anda
+percaya, beri tahu saya untuk menambahkan otentikasi (mis. kode akses
+sederhana atau login Google) sebelum dipakai lebih luas.
+
+Kelola database di
+[Firebase Console](https://console.firebase.google.com/project/buku-kas-harian-6c5ce/firestore).
+
+## Fitur "Impor dari screenshot" — dinonaktifkan sementara
+
+Kode asli aplikasi ini memanggil `https://api.anthropic.com/v1/messages`
+langsung dari browser tanpa API key. Itu hanya berfungsi di lingkungan
+preview khusus (bukan API sungguhan yang bisa dipakai publik), sehingga di
+GitHub Pages ini panggilan tersebut akan selalu gagal. Untuk menghindari
+pesan error yang membingungkan, fitur ini sekarang menampilkan penjelasan
+langsung ("belum tersedia di versi web ini") alih-alih mencoba dan gagal.
+
+Kami sengaja **tidak** menaruh API key Anthropic langsung di kode ini karena
+repo bersifat publik — siapa pun bisa mengambil key tersebut dan memakainya
+dengan biaya atas nama Anda. Kalau Anda ingin fitur ini aktif kembali, opsi
+amannya adalah membuat API key sendiri di console.anthropic.com lalu
+menyambungkannya lewat server proxy kecil (mis. Cloudflare Worker) yang
+menyimpan key di sisi server, bukan di kode publik ini.
 
 ## Kenapa bukan aplikasi native (bukan file .ipa)?
 
 Aplikasi native iOS (yang tampil di App Store) wajib dikompilasi lewat Xcode
-di komputer Mac dan ditandatangani dengan akun Apple Developer — sesi ini
-tidak punya akses ke Mac/Xcode, jadi saya tidak bisa membuatkan file .ipa.
-Pendekatan PWA di sini adalah cara paling realistis untuk mendapatkan
-pengalaman "seperti app" di iPhone tanpa proses tersebut: ikon di Home
-Screen, layar penuh tanpa address bar, dan bisa dibuka offline.
-
-## Cara mengunggah ke GitHub
-
-Sesi ini tidak punya koneksi GitHub yang sudah diotorisasi, jadi push perlu
-dilakukan dari komputer Anda:
-
-```bash
-cd path/ke/folder/repo-ini
-git init
-git add .
-git commit -m "Buku Kas Harian - PWA untuk iPhone"
-git branch -M main
-git remote add origin https://github.com/<username-anda>/buku-kas-harian.git
-git push -u origin main
-```
-
-Ganti `<username-anda>` dan nama repo sesuai keinginan Anda. Buat dulu repo
-kosongnya di github.com (New repository) sebelum menjalankan `git push`.
+di komputer Mac dan ditandatangani dengan akun Apple Developer. Pendekatan
+PWA di sini adalah cara paling realistis untuk mendapatkan pengalaman
+"seperti app" di iPhone tanpa proses tersebut: ikon di Home Screen, layar
+penuh tanpa address bar, dan bisa dibuka saat offline (halamannya saja —
+data tetap butuh koneksi untuk sinkron ke Firestore).
 
 ## Cara mengaktifkan GitHub Pages (agar bisa dibuka lewat URL https://)
 
 1. Buka repo di GitHub → tab **Settings** → **Pages**.
 2. Di bagian **Build and deployment**, pilih source **Deploy from a branch**.
 3. Pilih branch **main**, folder **/ (root)**, lalu **Save**.
-4. Tunggu 1-2 menit, GitHub akan memberi URL seperti:
-   `https://<username-anda>.github.io/buku-kas-harian/`
-
-PWA/Add to Home Screen di iPhone mensyaratkan halaman diakses lewat **https**
-(bukan dibuka sebagai file lokal), jadi langkah GitHub Pages ini penting.
+4. GitHub akan memberi URL: `https://danitani05.github.io/buku-kas-harian/`
 
 ## Cara install ke iPhone (Add to Home Screen)
 
 1. Buka URL GitHub Pages di atas menggunakan **Safari** di iPhone (harus
    Safari, bukan Chrome — iOS hanya mengizinkan install PWA lewat Safari).
 2. Tap ikon **Share** (kotak dengan panah ke atas) di toolbar bawah.
-3. Pilih **Add to Home Screen**.
-4. Beri nama (default: "Kas Harian"), lalu tap **Add**.
-5. Ikon aplikasi akan muncul di Home Screen dan terbuka layar penuh tanpa
-   address bar Safari, seperti aplikasi biasa.
+3. Pilih **Add to Home Screen**, beri nama, tap **Add**.
+4. Ikon aplikasi muncul di Home Screen, terbuka layar penuh tanpa address bar.
 
 ## Batasan yang perlu diketahui
 
-- Data disimpan di `localStorage` browser pada perangkat masing-masing.
-  Jika beberapa orang mencatat dari HP berbeda, catatan **tidak otomatis
-  tergabung** kecuali aplikasi ini memang punya mekanisme sinkronisasi
-  (misalnya lewat backend/API) — dari struktur file yang saya periksa, saya
-  tidak menemukan pemanggilan API eksternal, jadi kemungkinan besar
-  penyimpanan bersifat lokal per perangkat. Mohon diverifikasi langsung
-  dengan mencoba mencatat dari dua perangkat berbeda dan mengecek apakah
-  datanya sinkron.
-- Menghapus aplikasi dari Home Screen atau membersihkan data Safari akan
-  menghapus seluruh catatan (karena datanya ada di localStorage, bukan di
-  server).
-- Fitur "impor screenshot mutasi rekening" (jika ada di aplikasi) mungkin
-  memerlukan koneksi ke layanan AI eksternal untuk membaca gambar — ini
-  di luar apa yang bisa saya verifikasi tanpa menjalankan aplikasinya
-  langsung.
+- Data kini tersimpan di Firestore (cloud), bukan lagi hanya di
+  `localStorage`. Beberapa perangkat yang membuka URL yang sama akan melihat
+  data yang sama, dengan sedikit jeda (aplikasi mengambil data saat halaman
+  dimuat, bukan realtime-push — refresh halaman untuk melihat catatan
+  terbaru dari perangkat lain).
+- Karena tidak ada login, siapa pun yang tahu alamat situs ini bisa
+  membaca/menulis data kas — lihat bagian "Penyimpanan data" di atas.
+- Fitur "impor screenshot mutasi rekening" dinonaktifkan sampai ada API key +
+  proxy yang aman (lihat bagian di atas).
