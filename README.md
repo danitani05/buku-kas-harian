@@ -27,16 +27,33 @@ Jakarta - asia-southeast2). Data tersimpan di koleksi Firestore
 `bukuKasHarian`, satu dokumen per jenis data (`categories-v1`, `expenses-v1`,
 `device-name-v1`).
 
-Catatan keamanan yang perlu Anda ketahui: security rules Firestore saat ini
-mengizinkan **siapa pun membaca dan menulis** ke koleksi tersebut
-(`allow read, write: if true`) — tanpa login. Ini sengaja dibuat sederhana
-agar cocok dengan sifat aplikasi yang memang "bersama" tanpa akun. Konsekuensi:
-siapa pun yang tahu `projectId` dan `apiKey` (yang memang tampil di kode
-`index.html` publik ini — itu wajar untuk Firebase, bukan kebocoran) bisa ikut
-menulis ke database yang sama. Untuk kas harian pribadi/keluarga/tim kecil
-umumnya ini bisa diterima, tapi kalau ingin dibatasi hanya untuk yang Anda
-percaya, beri tahu saya untuk menambahkan otentikasi (mis. kode akses
-sederhana atau login Google) sebelum dipakai lebih luas.
+## Proteksi akses: PIN + Firebase Anonymous Auth
+
+Aplikasi ini sekarang meminta **PIN 6 digit** setiap kali dibuka, sebelum
+data (baik lokal maupun Firestore) bisa diakses. Setelah PIN benar, aplikasi
+login secara anonim ke Firebase Auth, dan Firestore Security Rules diubah
+menjadi:
+
+```
+allow read, write: if request.auth != null;
+```
+
+artinya permintaan baca/tulis ke Firestore sekarang ditolak kalau belum
+login — tidak lagi terbuka untuk siapa saja seperti sebelumnya.
+
+Catatan jujur soal batasannya: ini adalah **penghalang di level aplikasi**,
+bukan enkripsi tingkat data sensitif/finansial besar. PIN disimpan dalam
+kode sebagai hash SHA-256, tapi karena aplikasi ini statis (tanpa server
+sendiri) dan ruang kombinasi PIN 6 digit relatif kecil, seseorang yang
+benar-benar paham teknis Firebase dan berniat menyerang tetap punya jalan
+untuk mem-bypass PIN (misalnya dengan memanggil Firebase Auth API langsung,
+karena anonymous sign-in memang dirancang terbuka untuk siapa saja yang
+punya `apiKey` publik proyek ini). Untuk kas harian keluarga/tim kecil, ini
+cukup sebagai penghalang terhadap orang iseng yang kebetulan tahu alamat
+situsnya — tapi bukan proteksi setara sistem finansial sungguhan. Kalau
+kebutuhan keamanan Anda meningkat, itu perlu arsitektur backend sungguhan
+(login email/password atau Google, plus server proxy) di luar cakupan
+aplikasi statis semacam ini.
 
 Kelola database di
 [Firebase Console](https://console.firebase.google.com/project/buku-kas-harian-6c5ce/firestore).
@@ -100,8 +117,8 @@ data tetap butuh koneksi untuk sinkron ke Firestore).
   data yang sama, dengan sedikit jeda (aplikasi mengambil data saat halaman
   dimuat, bukan realtime-push — refresh halaman untuk melihat catatan
   terbaru dari perangkat lain).
-- Karena tidak ada login, siapa pun yang tahu alamat situs ini bisa
-  membaca/menulis data kas — lihat bagian "Penyimpanan data" di atas.
+- Akses kini dilindungi PIN (lihat bagian "Proteksi akses" di atas) — ini
+  penghalang level aplikasi, bukan enkripsi kelas enterprise.
 - Fitur "impor screenshot mutasi rekening" aktif memakai OCR lokal
   (Tesseract.js) — akurasinya kasar, selalu periksa ulang hasilnya sebelum
   disimpan (lihat bagian di atas).
