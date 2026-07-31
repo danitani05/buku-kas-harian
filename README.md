@@ -86,6 +86,42 @@ Kalau nanti Anda ingin akurasi setara AI (Claude/Gemini) tinggal bilang saja —
 itu tetap mungkin ditambahkan lewat proxy aman (mis. Cloudflare Worker) tanpa
 mengekspos API key di kode publik ini.
 
+## Fitur "Aset Saya" — pencatatan aset di luar kas harian
+
+Selain kas harian, aplikasi ini punya kartu terpisah "Aset Saya" untuk mencatat
+empat jenis aset secara sederhana (hanya sebagai penyimpanan/monitoring,
+bukan bagian dari perhitungan kas): **Emas**, **Crypto**, **Tabungan Cash**,
+dan **Saham**. Setiap entri menyimpan harga beli dan harga sekarang, lalu
+menghitung untung/rugi (nominal & persentase) per entri maupun totalnya.
+
+Sumber harga "harga sekarang" berbeda per jenis aset:
+
+- **Emas** — otomatis, dari [gold-api.com](https://gold-api.com) (harga emas
+  spot XAU dalam USD/troy ounce) dikonversi ke IDR memakai kurs dari
+  [frankfurter.dev](https://frankfurter.dev) (data resmi European Central
+  Bank). Kedua API gratis, tanpa API key, tanpa login. **Catatan jujur**:
+  ini harga emas spot internasional, bukan harga jual/beli emas retail
+  Indonesia (mis. Antam/Pegadaian) yang biasanya sedikit berbeda karena ada
+  premium, ongkos cetak, dan selisih jual-beli — anggap sebagai perkiraan,
+  bukan harga pasti untuk transaksi.
+- **Crypto** — otomatis, dari [CoinGecko](https://www.coingecko.com) API
+  publik (gratis, tanpa API key).
+- **Tabungan Cash** — manual sepenuhnya (nilai tunai, tidak ada
+  harga beli/sekarang yang berfluktuasi).
+- **Saham** — manual sepenuhnya. Setelah menelusuri beberapa sumber (situs
+  Investing.com, IndoPremier/IPOT, dan penyedia data IDX lain), tidak
+  ditemukan sumber yang benar-benar gratis, tanpa login, dan diizinkan
+  secara legal untuk diakses/ditampilkan ulang otomatis oleh aplikasi pihak
+  ketiga — data harga saham di situs-situs tersebut umumnya berlisensi
+  komersial dari bursa, sehingga scraping otomatis berisiko melanggar
+  ketentuan layanan mereka. Karena itu harga saham diinput manual, dan bisa
+  diperbarui kapan saja lewat kolom "harga sekarang" pada tiap baris.
+
+Tombol **"Refresh Harga Emas/Crypto"** memperbarui harga otomatis untuk
+semua entri Emas dan Crypto sekaligus (Cash dan Saham tidak tersentuh,
+karena memang manual). Setiap entri menyimpan cap waktu kapan harganya
+terakhir diperbarui.
+
 ## Kenapa bukan aplikasi native (bukan file .ipa)?
 
 Aplikasi native iOS (yang tampil di App Store) wajib dikompilasi lewat Xcode
