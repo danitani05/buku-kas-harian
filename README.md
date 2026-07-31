@@ -41,21 +41,33 @@ sederhana atau login Google) sebelum dipakai lebih luas.
 Kelola database di
 [Firebase Console](https://console.firebase.google.com/project/buku-kas-harian-6c5ce/firestore).
 
-## Fitur "Impor dari screenshot" — dinonaktifkan sementara
+## Fitur "Impor dari screenshot" — OCR lokal (Tesseract.js), tanpa API key
 
 Kode asli aplikasi ini memanggil `https://api.anthropic.com/v1/messages`
-langsung dari browser tanpa API key. Itu hanya berfungsi di lingkungan
-preview khusus (bukan API sungguhan yang bisa dipakai publik), sehingga di
-GitHub Pages ini panggilan tersebut akan selalu gagal. Untuk menghindari
-pesan error yang membingungkan, fitur ini sekarang menampilkan penjelasan
-langsung ("belum tersedia di versi web ini") alih-alih mencoba dan gagal.
+langsung dari browser tanpa API key — itu hanya berfungsi di lingkungan
+preview khusus, bukan API sungguhan yang bisa dipakai publik, sehingga selalu
+gagal di GitHub Pages.
 
-Kami sengaja **tidak** menaruh API key Anthropic langsung di kode ini karena
-repo bersifat publik — siapa pun bisa mengambil key tersebut dan memakainya
-dengan biaya atas nama Anda. Kalau Anda ingin fitur ini aktif kembali, opsi
-amannya adalah membuat API key sendiri di console.anthropic.com lalu
-menyambungkannya lewat server proxy kecil (mis. Cloudflare Worker) yang
-menyimpan key di sisi server, bukan di kode publik ini.
+Sebagai gantinya, fitur ini sekarang memakai **Tesseract.js**, mesin OCR
+(pembaca teks dari gambar) yang berjalan sepenuhnya di browser/HP Anda sendiri:
+
+- Tidak butuh API key, akun, atau server pihak ketiga apa pun.
+- Tidak ada biaya dan tidak ada batas jumlah pemakaian.
+- Gambar screenshot Anda tidak pernah dikirim ke mana pun — semua diproses
+  lokal di perangkat.
+
+Konsekuensinya: hasil ekstraksi jauh lebih kasar dibanding memakai model AI
+(Claude/Gemini). Tesseract hanya membaca teks mentah dari gambar lalu kode
+mencocokkan pola sederhana (tanggal, nominal dengan tanda +/-, sisa teks
+sebagai deskripsi) — tidak benar-benar "memahami" tata letak seperti model
+AI. Untuk hasil terbaik: gunakan screenshot yang tajam/tidak buram, dan selalu
+**periksa & koreksi** daftar transaksi hasil pindai sebelum disimpan, karena
+deskripsi atau tanggal bisa saja salah baca terutama pada gambar yang kecil,
+miring, atau berlatar belakang ramai.
+
+Kalau nanti Anda ingin akurasi setara AI (Claude/Gemini) tinggal bilang saja —
+itu tetap mungkin ditambahkan lewat proxy aman (mis. Cloudflare Worker) tanpa
+mengekspos API key di kode publik ini.
 
 ## Kenapa bukan aplikasi native (bukan file .ipa)?
 
@@ -90,5 +102,6 @@ data tetap butuh koneksi untuk sinkron ke Firestore).
   terbaru dari perangkat lain).
 - Karena tidak ada login, siapa pun yang tahu alamat situs ini bisa
   membaca/menulis data kas — lihat bagian "Penyimpanan data" di atas.
-- Fitur "impor screenshot mutasi rekening" dinonaktifkan sampai ada API key +
-  proxy yang aman (lihat bagian di atas).
+- Fitur "impor screenshot mutasi rekening" aktif memakai OCR lokal
+  (Tesseract.js) — akurasinya kasar, selalu periksa ulang hasilnya sebelum
+  disimpan (lihat bagian di atas).
