@@ -122,6 +122,24 @@ semua entri Emas dan Crypto sekaligus (Cash dan Saham tidak tersentuh,
 karena memang manual). Setiap entri menyimpan cap waktu kapan harganya
 terakhir diperbarui.
 
+## Filter periode kas harian
+
+Kartu ringkasan kas harian punya lima pilihan periode: Hari ini, Minggu ini,
+Bulan ini, **Periode Gajian**, dan **Rentang Bebas**. Ringkasan (selisih,
+masuk/keluar), grafik tren, rincian per kategori, dan riwayat transaksi
+semuanya mengikuti periode yang sedang dipilih.
+
+**Periode Gajian** dibuat khusus untuk siklus keuangan yang tidak mengikuti
+tanggal 1–akhir bulan kalender — misalnya kalau gajian tanggal 25, maka
+"bulan" keuangan Anda berjalan dari tanggal 25 sampai tanggal 24 bulan
+berikutnya. Tanggal mulai periode ini bisa diatur lewat kolom "Mulai tgl
+gajian" (default 25), dan tombol ‹ / › dipakai untuk berpindah ke periode
+sebelumnya/berikutnya tanpa mengubah tanggal mulai yang sudah diatur.
+
+**Rentang Bebas** menyediakan dua kolom tanggal (dari–sampai) untuk melihat
+transaksi pada rentang tanggal bebas, misalnya untuk mengecek 2 minggu
+terakhir atau periode di luar pola bulanan/gajian.
+
 ## Kenapa bukan aplikasi native (bukan file .ipa)?
 
 Aplikasi native iOS (yang tampil di App Store) wajib dikompilasi lewat Xcode
