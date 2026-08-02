@@ -58,6 +58,25 @@ aplikasi statis semacam ini.
 Kelola database di
 [Firebase Console](https://console.firebase.google.com/project/buku-kas-harian-6c5ce/firestore).
 
+### Perbaikan: data "hilang"/kembali kosong setelah menutup penuh aplikasi
+
+Sebelumnya ada bug race condition: begitu PIN benar dimasukkan, aplikasi
+langsung menutup layar PIN dan mulai memuat data dari Firestore, padahal
+proses login anonim (`signInAnonymously`) ke Firebase belum tentu selesai
+di saat yang bersamaan — terutama saat sinyal lambat, seperti kondisi khas
+setelah aplikasi ditutup penuh (bukan sekadar pindah aplikasi) lalu dibuka
+lagi di iPhone. Kalau proses baca data ini kalah cepat dari proses login,
+permintaan ke Firestore ditolak (belum ada izin), dan aplikasi diam-diam
+menganggap datanya kosong — padahal data aslinya masih aman tersimpan di
+Firestore, hanya belum sempat terbaca.
+
+Perbaikannya: proses baca/tulis ke Firestore sekarang **menunggu** sampai
+login anonim benar-benar selesai terlebih dahulu, baru diizinkan berjalan
+— tidak lagi jalan sendiri-sendiri secara bersamaan. Sudah diuji langsung:
+kalau PIN dimasukkan secepat mungkin (skenario terburuk), permintaan baca
+data akan menunggu dengan sendirinya sampai login selesai, lalu membaca
+data yang benar — bukan lagi tampil kosong.
+
 ## Fitur "Impor dari screenshot" — OCR lokal (Tesseract.js), tanpa API key
 
 Kode asli aplikasi ini memanggil `https://api.anthropic.com/v1/messages`
