@@ -124,21 +124,27 @@ terakhir diperbarui.
 
 ## Filter periode kas harian
 
-Kartu ringkasan kas harian punya lima pilihan periode: Hari ini, Minggu ini,
-Bulan ini, **Periode Gajian**, dan **Rentang Bebas**. Ringkasan (selisih,
-masuk/keluar), grafik tren, rincian per kategori, dan riwayat transaksi
-semuanya mengikuti periode yang sedang dipilih.
+Ada dua filter periode yang terpisah, masing-masing untuk kebutuhan berbeda:
 
-**Periode Gajian** dibuat khusus untuk siklus keuangan yang tidak mengikuti
-tanggal 1–akhir bulan kalender — misalnya kalau gajian tanggal 25, maka
-"bulan" keuangan Anda berjalan dari tanggal 25 sampai tanggal 24 bulan
-berikutnya. Tanggal mulai periode ini bisa diatur lewat kolom "Mulai tgl
-gajian" (default 25), dan tombol ‹ / › dipakai untuk berpindah ke periode
-sebelumnya/berikutnya tanpa mengubah tanggal mulai yang sudah diatur.
+- **Filter utama (Ringkasan, Per Kategori, Riwayat)** — dua pilihan:
+  **Periode Gajian** dan **Rentang Bebas**. Ini adalah "periode kerja" Anda
+  yang sebenarnya, dipakai untuk menghitung selisih/masuk/keluar, rincian
+  per kategori, dan daftar riwayat transaksi.
+  - **Periode Gajian** dibuat khusus untuk siklus keuangan yang tidak
+    mengikuti tanggal 1–akhir bulan kalender — misalnya kalau gajian
+    tanggal 25, maka "bulan" keuangan Anda berjalan dari tanggal 25 sampai
+    tanggal 24 bulan berikutnya. Tanggal mulai periode ini bisa diatur
+    lewat kolom "Mulai tgl gajian" (default 25), dan tombol ‹ / › dipakai
+    untuk berpindah ke periode sebelumnya/berikutnya tanpa mengubah
+    tanggal mulai yang sudah diatur.
+  - **Rentang Bebas** menyediakan dua kolom tanggal (dari–sampai) untuk
+    melihat transaksi pada rentang tanggal bebas, misalnya untuk mengecek
+    2 minggu terakhir atau periode di luar pola gajian.
 
-**Rentang Bebas** menyediakan dua kolom tanggal (dari–sampai) untuk melihat
-transaksi pada rentang tanggal bebas, misalnya untuk mengecek 2 minggu
-terakhir atau periode di luar pola bulanan/gajian.
+- **Toggle laporan (kartu Tren saja)** — tiga pilihan kecil: Harian,
+  Mingguan, Bulanan. Ini murni untuk mengganti tampilan grafik tren
+  (7 hari/8 minggu/6 bulan terakhir) dan sama sekali tidak memengaruhi
+  Ringkasan, Per Kategori, atau Riwayat — keduanya berjalan independen.
 
 ## Kenapa bukan aplikasi native (bukan file .ipa)?
 
