@@ -89,10 +89,11 @@ mengekspos API key di kode publik ini.
 ## Fitur "Aset Saya" — pencatatan aset di luar kas harian
 
 Selain kas harian, aplikasi ini punya kartu terpisah "Aset Saya" untuk mencatat
-empat jenis aset secara sederhana (hanya sebagai penyimpanan/monitoring,
+tujuh jenis aset secara sederhana (hanya sebagai penyimpanan/monitoring,
 bukan bagian dari perhitungan kas): **Emas**, **Crypto**, **Tabungan Cash**,
-dan **Saham**. Setiap entri menyimpan harga beli dan harga sekarang, lalu
-menghitung untung/rugi (nominal & persentase) per entri maupun totalnya.
+**Saham**, **Tanah**, **Rumah**, dan **Kendaraan**. Setiap entri menyimpan
+harga beli dan harga sekarang, lalu menghitung untung/rugi (nominal &
+persentase) per entri maupun totalnya.
 
 Sumber harga "harga sekarang" berbeda per jenis aset:
 
@@ -116,9 +117,18 @@ Sumber harga "harga sekarang" berbeda per jenis aset:
   komersial dari bursa, sehingga scraping otomatis berisiko melanggar
   ketentuan layanan mereka. Karena itu harga saham diinput manual, dan bisa
   diperbarui kapan saja lewat kolom "harga sekarang" pada tiap baris.
+- **Tanah**, **Rumah**, dan **Kendaraan** — manual sepenuhnya, karena tidak
+  ada sumber harga pasar real-time yang wajar untuk aset semacam ini (nilai
+  properti/kendaraan ditentukan appraisal, lokasi, kondisi fisik, dsb, bukan
+  harga pasar tunggal seperti saham/emas/crypto). Berbeda dari Emas/Crypto/
+  Saham yang memakai skema "jumlah × harga per unit", tiga jenis ini memakai
+  satu nilai total langsung — isi kolom "Harga Beli (Rp)" dan "Harga
+  Sekarang (Rp)" dengan nilai keseluruhan aset (bukan per meter/per unit).
+  Kalau Anda punya lebih dari satu bidang tanah/rumah/kendaraan, catat
+  masing-masing sebagai entri terpisah.
 
 Tombol **"Refresh Harga Emas/Crypto"** memperbarui harga otomatis untuk
-semua entri Emas dan Crypto sekaligus (Cash dan Saham tidak tersentuh,
+semua entri Emas dan Crypto sekaligus (jenis aset lainnya tidak tersentuh,
 karena memang manual). Setiap entri menyimpan cap waktu kapan harganya
 terakhir diperbarui.
 
